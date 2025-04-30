@@ -5,10 +5,10 @@ from connect_faiss_langchain import load_vectorstore
 from langchain.chat_models import ChatOpenAI
 from langchain.chains import RetrievalQA
 
-# Load environment variables
+# Load .env variables
 load_dotenv()
 
-st.set_page_config(page_title="Deep Learning Research Assistant")
+st.set_page_config(page_title="Research Assistant")
 st.title(" Deep Learning Research Assistant")
 
 @st.cache_resource
@@ -26,26 +26,23 @@ def get_chain():
         return None
 
 qa_chain = get_chain()
-
-# Chat interface
 if "chat_history" not in st.session_state:
     st.session_state.chat_history = []
 
-query = st.text_input("Ask a research question:")
-
+query = st.text_input("Ask your research question:")
 if st.button("Ask") and query:
     if qa_chain:
         result = qa_chain.invoke({"query": query})
         st.session_state.chat_history.append((query, result["result"]))
     else:
-        st.error("Retrieval chain not available.")
+        st.error("Chain not loaded properly.")
 
 if st.button("Clear"):
     st.session_state.chat_history = []
 
-# Display chat history
 for q, a in reversed(st.session_state.chat_history):
     st.markdown(f"**Q:** {q}")
     st.markdown(f"**A:** {a}")
     st.markdown("---")
+
 
